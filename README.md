@@ -1,30 +1,33 @@
 #chain_filter.py
 
-This is just a simple python script to filter out chained alignments. It consists of two simple python scripts
-The first one 'filter_self.py' removes exact contig-contig alignments identified when mapping a set of contigs back to itself.
-This step is unnecessary if you are identifying matches in distinct reference/query sequences.
+This is just a simple python script to filter out chained alignments from a nucmer *.coords file.
 
-After you've identified your matches, filtered and listed the coordinates, you can run synteny_filter.py on the *.coords file
-to identify chains longer than a specified number of links.
+It consists of two simple python scripts:
 
-The basic flow is:
+1) filter_self.py - removes exact contig-contig alignments identified when mapping a set of contigs back to itself.
+2) chain_filter.py - filters a chained alignments from a *.coords file.
 
-### Identify matches between sequences:
-$ nucmer -p out ref.fasta query.fasta
+The filter_self.py script is necessary if you've aligned one contig set against itself and you need to filter out the
+exact 1:1 contig hits that prevent the delta-filter from working properly. You can omit this step if you used two
+distinct input fasta files for the initial nucmer search.
 
-### If you are mapping a set of contigs back to itself, you must filter out self hits prior to using delta-filter
-$ filter_self.py out.delta
+##The basic flow is:
 
-### Filter repetitive elements from delta file
-$ delta-filter -r -q out_noself.delta >out_noself_filtered.delta
-
-### List coordinates of identified sequence matches
-$ show-coords -H -T -L 1000 out_noself_filtered.delta >out_noself_filtered.coords
-
-### Parse coordinates file for chained alignments longer than a specified number of links (default=5)
-$ synteny_filter.py out_noself_filtered.coords --chain_length 5
+1) Identify matches using `nucmer`
+2) Filter self hits using `filter_self.py` (optional if input fastas were distinct)
+3) Filter repetitive hits using `delta-filter`
+4) List coordinates of alignments using `show-coords`
+5) Filter chains greater than specified length using `chain_filter.py`
 
 
-Outputs:
-shared_homologies.coords - parsed version of input file containing only homologies of certain chain length and over
-shared_homologies.out - summary file listing the number of bases / chained homologies for each pair of alignments
+```bash
+  $ nucmer -p out ref.fasta query.fasta
+  $ filter_self.py out.delta
+  $ delta-filter -r -q out_noself.delta >out_noself_filtered.delta
+  $ show-coords -H -T -L 1000 out_noself_filtered.delta >out_noself_filtered.coords*
+  $ chain_filter.py out_noself_filtered.coords --chain_length 5
+```
+
+###Outputs:
+  * shared_homologies.coords - parsed version of input file containing only homologies of certain chain length and over
+  * shared_homologies.out - summary file listing the number of bases / chained homologies for each pair of alignments
