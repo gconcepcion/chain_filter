@@ -38,7 +38,7 @@ def filter_exact_delta(delta_data, output):
 
 def write_output(new_delta, output):
     """write noself delta"""
-    output = "{x}_noself.delta".format(x=output.rstrip('.delta'))
+
     with open(output, 'w') as fout:
         for item in new_delta:
             fout.write("{i}\n".format(i=item))

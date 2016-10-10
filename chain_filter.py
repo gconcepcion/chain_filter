@@ -23,9 +23,8 @@ def _insert_into_data_struct(name, row, hit_dict):
 def build_dict(matches):
     """build match dictionary"""
     hit_dict = {}
-#
-    #     for match in matches:
-    for match in matches[:7500]:
+
+    for match in matches:
         rstart, rend, qstart, qend, rlen, qlen, identity, rname, qname = match.split()
         if rname == qname:
             pass
